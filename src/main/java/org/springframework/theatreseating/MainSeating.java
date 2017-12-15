@@ -26,16 +26,21 @@ public class MainSeating {
 	// Define a static logger variable so that it references the
 	// Logger instance named "MyApp".
 	private static final Logger logger = LogManager.getLogger(MainSeating.class);
+	private static int size=0;
+	private static int cusRqSize = 0;
 
 	/**
 	 * @param args
 	 */
+	
 	public static void main(String[] args) {
 		MainSeating ms = new MainSeating();
 		ClassLoader classLoader = ms.getClassLoader();
 		// Create 2-dimensional array.
-		String[][] availableSeats = new String[20][20];//In real time scenario size should be dynamic
-		String[][] custReqst = new String[20][20];//In real time scenario size should be dynamic
+		int rows = getFileSize("input.txt",classLoader);
+		
+		String[][] availableSeats = new String[rows][20];//In real time scenario size should be dynamic
+		String[][] custReqst = new String[20][2];//In real time scenario size should be dynamic
 		boolean resReq = false;
 		LinkedHashMap<String, String> custReq = new LinkedHashMap<String, String>();
 
@@ -115,7 +120,7 @@ public class MainSeating {
 
 		for (Map.Entry<String, String> entry : allocatedMap.entrySet()) {
 			//Printing the O/P both in log console
-			logger.info(entry.getKey() + " " + entry.getValue());
+			//logger.info(entry.getKey() + " " + entry.getValue());
 			//If it is to test in system console the below will do
 			System.out.println(entry.getKey() + " " + entry.getValue());
 		}
@@ -168,6 +173,27 @@ public class MainSeating {
 			}
 		}
 		return maxValue;
+	}
+	
+	public static int getFileSize(String fileName,ClassLoader classLoader) {
+		try (BufferedReader br = new BufferedReader(new FileReader(classLoader.getResource("input.txt").getFile()))) {
+
+			String line;
+			boolean isCustReq = false;
+			while ((line = br.readLine()) != null) {
+				if (line.trim().equals("") || isCustReq) {
+					cusRqSize++;
+					isCustReq = true;
+				} else {
+					size++;
+				}
+
+			}
+
+		} catch (IOException e) {
+			logger.error("Error while handling with file : " + e.getMessage());
+		}
+		return size;
 	}
 
 }
